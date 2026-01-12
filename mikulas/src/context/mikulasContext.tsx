@@ -1,19 +1,32 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createContext, useEffect, useState, type PropsWithKid } from "react";
-import type { Kid, Gift } from "../interfaces";
+import type { Kid, Gift, Anyag } from "../interfaces";
+
+interface MikulasContextType {
+    kids: Kid[];
+    toys: Gift[];
+    fetchGyerekek: () => Promise<Kid[]>;
+    fetchAjandekok: () => Promise<Gift[]>;
+
+    createAjandek: (toy: Omit<Gift, 'id'>) => Promise<Gift>;
+    deleteAjandek: (id: number) => Promise<void>;
+ 
+    setAjandekGyereknek: (kidId: number, toyId: number) => Promise<void>;
+    deleteAjandekGyerektol: (kidId: number, toyId: number) => Promise<void>;
+}
 
 const defaultContextValue = {
   gyerekek: [] as Kid[],
   ajandekok: [] as Gift[],
 
-  fetchGyerekek() {},
-  fetchAjandekok() {},
+  fetchGyerekek: async() => {},
+  fetchAjandekok: async() => {},
 
-  createAjandek() {},
-  deleteAjandek() {},
+  createAjandek: async(toy: Omit<Gift, 'id'>) => ({ id: 0, name: "", anyag: "other", suly: 0 }),
+  deleteAjandek: async(id: number) => {},
 
-  setAjandekGyereknek() {},
-  deleteAjandekGyerektol() {},
+  setAjandekGyereknek: async(KidId: number, giftId: number) => {},
+  deleteAjandekGyerektol: async(KidId: number, giftId: number) => {},
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -37,11 +50,11 @@ export function MikulasProvider(props: PropsWithKid) {
     setAjandekok(data);
   }
 
-  async function createAjandek(name: string) {
+  async function createAjandek(name: string, anyag: Anyag, suly: number) {
     await fetch(`${BASE_URL}/toys`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, anyag, suly }),
     });
     fetchAjandekok();
   }

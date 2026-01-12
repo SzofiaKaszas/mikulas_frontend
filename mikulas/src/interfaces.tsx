@@ -5,7 +5,7 @@ export interface Kid{
     wasGood: boolean;
 }
 
-type Anyag = 'wood' | 'metal' | 'plastic' | 'other';
+export type Anyag = 'wood' | 'metal' | 'plastic' | 'other';
 
 export interface Gift{
     id: number;
