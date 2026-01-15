@@ -1,19 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createContext, useEffect, useState, type PropsWithChildren } from "react";
-import type { Kid, Gift } from "../interfaces";
-
-interface MikulasContextType {
-    gyerekek: Kid[];
-    ajandekok : Gift[];
-    fetchGyerekek: () => Promise<Kid[]>;
-    fetchAjandekok: () => Promise<Gift[]>;
-
-    createAjandek: (toy: Omit<Gift, 'id'>) => Promise<Gift>;
-    deleteAjandek: (id: number) => Promise<void>;
- 
-    setAjandekGyereknek: (kidId: number, toyId: number) => Promise<void>;
-    deleteAjandekGyerektol: (kidId: number, toyId: number) => Promise<void>;
-}
+import type { Kid, Gift, MikulasContextType } from "../interfaces";
 
 const defaultContextValue : MikulasContextType = {
   gyerekek: [] as Kid[],
@@ -52,16 +39,28 @@ export function MikulasProvider(props: PropsWithChildren) {
     return data;
   }
 
-  async function createAjandek(toy: Omit<Gift, 'id'>) {
-    const response = await fetch(`${BASE_URL}/toys`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(toy),
-    });
-    const data = await response.json();
-    fetchAjandekok();
-    return data;
+async function createAjandek(toy: Omit<Gift, "id">) {
+  const response = await fetch(`${BASE_URL}/toys`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: toy.name,
+      material: toy.anyag,
+      weight: toy.suly,   
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Create gift failed:", errorText);
+    throw new Error(errorText);
   }
+
+  const data = await response.json();
+  fetchAjandekok();
+  return data;
+}
+
 
   async function deleteAjandek(id: number) {
     await fetch(`${BASE_URL}/toys/${id}`, {
