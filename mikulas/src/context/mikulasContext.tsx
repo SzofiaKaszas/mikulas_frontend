@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { createContext, useEffect, useState, type PropsWithKid } from "react";
-import type { Kid, Gift, Anyag } from "../interfaces";
+import { createContext, useEffect, useState, type PropsWithChildren } from "react";
+import type { Kid, Gift } from "../interfaces";
 
 interface MikulasContextType {
-    kids: Kid[];
-    toys: Gift[];
+    gyerekek: Kid[];
+    ajandekok : Gift[];
     fetchGyerekek: () => Promise<Kid[]>;
     fetchAjandekok: () => Promise<Gift[]>;
 
@@ -15,12 +15,12 @@ interface MikulasContextType {
     deleteAjandekGyerektol: (kidId: number, toyId: number) => Promise<void>;
 }
 
-const defaultContextValue = {
+const defaultContextValue : MikulasContextType = {
   gyerekek: [] as Kid[],
   ajandekok: [] as Gift[],
 
-  fetchGyerekek: async() => {},
-  fetchAjandekok: async() => {},
+  fetchGyerekek: async() => [] as Kid[],
+  fetchAjandekok: async() => [] as Gift[],
 
   createAjandek: async(toy: Omit<Gift, 'id'>) => ({ id: 0, name: "", anyag: "other", suly: 0 }),
   deleteAjandek: async(id: number) => {},
@@ -34,7 +34,7 @@ export const MikulasContext = createContext(defaultContextValue);
 
 const BASE_URL = "http://localhost:3000";
 
-export function MikulasProvider(props: PropsWithKid) {
+export function MikulasProvider(props: PropsWithChildren) {
   const [gyerekek, setGyerekek] = useState<Kid[]>([]);
   const [ajandekok, setAjandekok] = useState<Gift[]>([]);
 
@@ -42,21 +42,25 @@ export function MikulasProvider(props: PropsWithKid) {
     const response = await fetch(`${BASE_URL}/children`);
     const data = await response.json();
     setGyerekek(data);
+    return data;
   }
 
   async function fetchAjandekok() {
     const response = await fetch(`${BASE_URL}/toys`);
     const data = await response.json();
     setAjandekok(data);
+    return data;
   }
 
-  async function createAjandek(name: string, anyag: Anyag, suly: number) {
-    await fetch(`${BASE_URL}/toys`, {
+  async function createAjandek(toy: Omit<Gift, 'id'>) {
+    const response = await fetch(`${BASE_URL}/toys`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, anyag, suly }),
+      body: JSON.stringify(toy),
     });
+    const data = await response.json();
     fetchAjandekok();
+    return data;
   }
 
   async function deleteAjandek(id: number) {

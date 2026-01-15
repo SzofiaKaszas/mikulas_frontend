@@ -7,13 +7,14 @@ import App from './App.tsx'
 import { Gifts } from './Gifts.tsx';
 import { AddGiftToKid } from './AddGiftToKid.tsx';
 import { Kids } from './Kids.tsx';
+import { MikulasProvider } from './context/mikulasContext.tsx';
 
 const router = createBrowserRouter([
   {
     path: "/",
     Component: App,
     children: [
-      {index: true},
+      {index: true, Component: Kids},
       {path: '/kids', Component: Kids},
       {path: '/gifts', Component: Gifts},
       {path: '/gifttokid', Component: AddGiftToKid},
@@ -23,6 +24,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <MikulasProvider>
     <RouterProvider router={router} />
+    </MikulasProvider>
   </StrictMode>,
 )
