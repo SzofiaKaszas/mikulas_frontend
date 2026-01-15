@@ -1,11 +1,6 @@
-import type { Gift } from "../interfaces";
+import type { GiftProps } from "../interfaces";
 
-type Props = {
-  gift: Gift;
-  onDelete: (id: number) => Promise<void>;
-};
-
-export function GiftComponent({ gift, onDelete }: Props) {
+export function GiftComponent({ gift, onDelete }: GiftProps) {
   return (
     <div className="card shadow-sm rounded-4 h-100">
       <div className="card-body d-flex flex-column justify-content-between">

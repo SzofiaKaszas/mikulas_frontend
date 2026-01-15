@@ -27,3 +27,8 @@ export interface MikulasContextType {
     setAjandekGyereknek: (kidId: number, toyId: number) => Promise<void>;
     deleteAjandekGyerektol: (kidId: number, toyId: number) => Promise<void>;
 }
+
+export type GiftProps = {
+  gift: Gift;
+  onDelete: (id: number) => Promise<void>;
+};
