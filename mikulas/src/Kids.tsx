@@ -1,11 +1,15 @@
-export function Kids() {
+import { useContext } from "react";
+import { MikulasContext } from "./context/mikulasContext";
+import { Kid } from "./Kid";
 
-    
+export function Kids() {
+    const context = useContext(MikulasContext);
 
     return (
         <div>
-            <h2>Kids Page</h2>
-            <p>This is where the kids are displayed.</p>
+            {context.gyerekek.map(gyerek => (
+                <Kid kid={gyerek} key={gyerek.id} />
+            ))}
         </div>
     );
 }
