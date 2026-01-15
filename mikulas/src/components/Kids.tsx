@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { MikulasContext } from "./context/mikulasContext";
 import { Kid } from "./Kid";
+import { MikulasContext } from "../context/mikulasContext";
 
 export function Kids() {
     const context = useContext(MikulasContext);
