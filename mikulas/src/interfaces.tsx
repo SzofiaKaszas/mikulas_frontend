@@ -19,6 +19,7 @@ export interface MikulasContextType {
     ajandekok : Gift[];
     fetchGyerekek: () => Promise<Kid[]>;
     fetchAjandekok: () => Promise<Gift[]>;
+    getToysOfChild: (id: number) => Promise<Gift[]>;
 
     createAjandek: (toy: Omit<Gift, 'id'>) => Promise<Gift>;
     deleteAjandek: (id: number) => Promise<void>;

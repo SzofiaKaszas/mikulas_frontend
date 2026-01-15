@@ -7,14 +7,20 @@ type Props = {
 
 export function GiftComponent({ gift, onDelete }: Props) {
   return (
-    <div>
-      <h3>{gift.name}</h3>
-      <p>{gift.anyag}</p>
-      <p>Weight: {gift.suly} kg</p>
-
-      <button onClick={() => onDelete(gift.id)}>
-        Delete
-      </button>
+    <div className="card shadow-sm rounded-4 h-100">
+      <div className="card-body d-flex flex-column justify-content-between">
+        <h5 className="card-title">{gift.name}</h5>
+        <p className="card-text mb-3">
+          Anyag: {gift.anyag} <br />
+          Súly: {gift.suly} kg
+        </p>
+        <button
+          className="btn btn-danger w-100 btn-sm"
+          onClick={() => onDelete(gift.id)}
+        >
+          Törlés
+        </button>
+      </div>
     </div>
   );
 }

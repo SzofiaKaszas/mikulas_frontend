@@ -1,11 +1,32 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { MikulasContext } from "../context/mikulasContext";
+import type { Gift } from "../interfaces";
 
-export function AddGiftToKid() {
-  const { gyerekek, ajandekok, setAjandekGyereknek } = useContext(MikulasContext);
+export function DeleteGiftFromKid() {
+  const { gyerekek, getToysOfChild, deleteAjandekGyerektol } =
+    useContext(MikulasContext);
 
   const [selectedKidId, setSelectedKidId] = useState<number | "">("");
   const [selectedGiftId, setSelectedGiftId] = useState<number | "">("");
+  const [kidGifts, setKidGifts] = useState<Gift[]>([]);
+
+  useEffect(() => {
+    const loadGifts = async () => {
+      if (selectedKidId !== "") {
+        try {
+          const gifts = await getToysOfChild(selectedKidId);
+          setKidGifts(gifts);
+          setSelectedGiftId("");
+        } catch (error) {
+          console.error(error);
+          setKidGifts([]);
+        }
+      } else {
+        setKidGifts([]);
+      }
+    };
+    loadGifts();
+  }, [selectedKidId, getToysOfChild]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,13 +37,15 @@ export function AddGiftToKid() {
     }
 
     try {
-      await setAjandekGyereknek(selectedKidId, selectedGiftId);
-      alert("Ajándék sikeresen hozzáadva!");
-      setSelectedKidId("");
+      await deleteAjandekGyerektol(selectedKidId, selectedGiftId);
+      alert("Ajándék sikeresen törölve");
+
+      const gifts = await getToysOfChild(selectedKidId);
+      setKidGifts(gifts);
       setSelectedGiftId("");
     } catch (error) {
       console.error(error);
-      alert("Hiba történt az ajándék hozzáadásakor");
+      alert("Hiba történt az ajándék törlésekor");
     }
   };
 
@@ -30,17 +53,17 @@ export function AddGiftToKid() {
     <div className="container py-5 d-flex justify-content-center">
       <form 
         onSubmit={handleSubmit} 
-        className="p-4 shadow-sm rounded-4 bg-light w-100"
+        className="p-4 shadow-lg rounded-4 bg-light w-100"
         style={{ maxWidth: "400px" }}
       >
-        <h3 className="text-center mb-4">Ajándék hozzáadása gyerekhez</h3>
+        <h3 className="text-center mb-4">Ajándék törlése a gyerektől</h3>
 
         <div className="mb-3">
           <label className="form-label">Gyerek</label>
           <select
             className="form-select"
             value={selectedKidId}
-            onChange={(e) => setSelectedKidId(Number(e.target.value))}
+            onChange={(e) => setSelectedKidId(e.target.value === "" ? "" : Number(e.target.value))}
           >
             <option value="">-- válassz gyereket --</option>
             {gyerekek.map((gyerek) => (
@@ -56,12 +79,13 @@ export function AddGiftToKid() {
           <select
             className="form-select"
             value={selectedGiftId}
-            onChange={(e) => setSelectedGiftId(Number(e.target.value))}
+            disabled={kidGifts.length === 0}
+            onChange={(e) => setSelectedGiftId(e.target.value === "" ? "" : Number(e.target.value))}
           >
             <option value="">-- válassz ajándékot --</option>
-            {ajandekok.map((ajandek) => (
-              <option key={ajandek.id} value={ajandek.id}>
-                {ajandek.name}
+            {kidGifts.map((gift) => (
+              <option key={gift.id} value={gift.id}>
+                {gift.name}
               </option>
             ))}
           </select>
@@ -69,10 +93,10 @@ export function AddGiftToKid() {
 
         <button
           type="submit"
-          className="btn btn-success w-100"
+          className="btn btn-danger w-100"
           disabled={!selectedKidId || !selectedGiftId}
         >
-          Hozzáadás
+          Törlés
         </button>
       </form>
     </div>
